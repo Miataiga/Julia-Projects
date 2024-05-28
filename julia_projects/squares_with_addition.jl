@@ -9,6 +9,10 @@
     were meant to know.
 
     Now it exists in machine form, very cool!
+    (Although not too useful, since the computer thinks 
+    adding it's way up to 9325816592400 needs to take 
+    like two minutes and a ton of screaming, but can do 
+    3053820*3053820 without any sorta hassle.)
 =#
 
 function squares_with_addition(sqr_num)
