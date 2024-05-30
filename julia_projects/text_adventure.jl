@@ -28,6 +28,24 @@ mutable struct Entity
     y::Int64
 end
 
+mutable struct Object
+    name::String
+    location::String
+end
+
+player = Entity("Player", "Garden", 1, 1)
+
+cool_rock = Object("Cool Rock", "Cool Cave")
+skateboard_dog = Object("Skateboard Dog", "Skate Park")
+green_bug = Object("Green Bug", "Old Log")
+nonsecret_frog = Object("Nonsecret Frog", "Pond")
+dancing_bird = Object("Dancing Bird", "Bird Nest")
+hopes_and_dreams = Object("pile of Hopes and Dreams", "Bottomless Pit")
+secret_frog = Object("Secret Frog", "Garden")
+
+Objects = [cool_rock, skateboard_dog, green_bug, nonsecret_frog, dancing_bird, hopes_and_dreams]
+Inventory = [secret_frog]
+
 Map = ["Garden" "Cool Cave" "Skate Park"; "Big Tree" "Small House" "Pond"; "Old Log" "Bird Nest" "Bottomless Pit"]
 #=
     Garden-------Cool Cave----Skate Park--
@@ -67,44 +85,43 @@ function move_west()
     end
 end
 
+function swap!(toArray, fromArray, index)
+    push!(toArray, fromArray[index])
+    deleteat!(fromArray, index)
+end
+
+function grab_object(input)
+    for (index, value) in pairs(Objects)
+        if input == ("grab " * value.name) && player.location == value.location
+            println("*You grabbed the ", value.name, "*")
+            swap!(Inventory, Objects, index)
+            return input
+        end
+    end
+end
+
+function drop_object(input)
+    for (index, value) in pairs(Inventory)
+        if input == ("drop " * value.name)
+            println("*You dropped the ", value.name, "*")
+            value.location = player.location
+            swap!(Objects, Inventory, index)
+            return input
+        end
+    end
+end
+
 function list_actions()
     input = readline()
     input == "n" && return move_north()
     input == "e" && return move_east()
     input == "s" && return move_south()
     input == "w" && return move_west()
-    for (index, value) in pairs(Objects)
-        if input == ("grab " * value.name) && player.location == value.location
-            println("*You grabbed the ", value.name, "*")
-            push!(Inventory, Objects[index])
-            deleteat!(Objects, index)
-            return
-        end
-    end
-    for (index, value) in pairs(Inventory)
-        if input == ("drop " * value.name)
-            println("*You dropped the ", value.name, "*")
-            value.location = player.location
-            push!(Objects, Inventory[index])
-            deleteat!(Inventory, index)
-            return
-        end
-    end
+    input == grab_object(input) && return
+    input == drop_object(input) && return
+
     println("*Invalid command. Don't forget case sensitivity.*")
 end
-
-player = Entity("Player", "Garden", 1, 1)
-
-cool_rock = Entity("Cool Rock", "Cool Cave", 1, 2)
-skateboard_dog = Entity("Skateboard Dog", "Skate Park", 1, 3)
-green_bug = Entity("Green Bug", "Old Log", 3, 1)
-nonsecret_frog = Entity("Nonsecret Frog", "Pond", 2, 3)
-dancing_bird = Entity("Dancing Bird", "Bird Nest", 3, 2)
-hopes_and_dreams = Entity("Hopes and Dreams", "Bottomless Pit", 3, 3)
-secret_frog = Entity("Secret Frog", "Garden", 1, 1)
-
-Objects = [cool_rock, skateboard_dog, green_bug, nonsecret_frog, dancing_bird, hopes_and_dreams]
-Inventory = [secret_frog]
 
 println("All commands and names are case sensitive!")
 while true
